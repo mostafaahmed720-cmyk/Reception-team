@@ -1,6 +1,6 @@
 {
-  "name": "Reception Team",
-  "short_name": "Reception",
+  "name": "My Team",
+  "short_name": "My Team",
   "description": "Team attendance, schedules and requests",
   "id": "./",
   "start_url": "./",

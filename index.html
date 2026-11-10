@@ -10,8 +10,8 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Reception Team">
-<title>Reception Team</title>
+<meta name="apple-mobile-web-app-title" content="My Team">
+<title>My Team</title>
 <style>
 :root{color-scheme:dark;--bg:#000;--sf:#0e0f12;--inp:#17181c;--ink:#e7e9ee;--mut:#8a909c;--ln:#23252b;--pri:#6ea8fe;--on:#071226;--ok:#34d399;--late:#fbbf24;--abs:#f87171;--lv:#a78bfa;--off:#6b7280;--rest:#38bdf8;--out:#262932;--end:#fb923c;box-sizing:border-box;padding-top:0;padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
@@ -73,6 +73,7 @@ h1{margin:0}
 .hero .ht{position:relative;padding:0 16px}
 .hero h1{font-size:23px;font-weight:700;letter-spacing:.3px;color:#fff;text-shadow:0 1px 10px #000}
 nav:empty{display:none}
+.stk nav{margin:8px 16px 0}
 .hero .dt{font-size:13px;color:#b9c7e0;margin-top:2px}
 .ov-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .bar{display:flex;gap:3px;height:8px;margin-top:12px;border-radius:99px;overflow:hidden;background:var(--inp)}
@@ -84,7 +85,7 @@ nav:empty{display:none}
 .st b{display:block;font-size:28px;font-weight:700;line-height:1.15}
 .st span{display:block;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);margin-top:2px}
 .en{color:var(--end)}
-.grid{table-layout:fixed;width:814px;min-width:0;border-collapse:separate;border-spacing:0;border-top:1px solid var(--ln);border-left:1px solid var(--ln)}
+.grid{table-layout:fixed;width:892px;min-width:0;border-collapse:separate;border-spacing:0;border-top:1px solid var(--ln);border-left:1px solid var(--ln)}
 .grid th,.grid td{width:78px;padding:11px 4px;text-align:center;vertical-align:middle;border-right:1px solid var(--ln);border-bottom:1px solid var(--ln)}
 .grid th{background:#14151a;color:var(--mut);font-weight:600;font-size:13px}
 .grid .cn{width:112px;text-align:start;padding-left:10px;position:sticky;left:0;z-index:1;background:var(--sf)}
@@ -100,6 +101,8 @@ textarea{width:100%;background:var(--inp);border:1px solid var(--ln);border-radi
 #scn video{width:100%;height:100%;object-fit:cover}
 .sf{position:absolute;left:50%;top:44%;width:min(68vw,300px);height:min(68vw,300px);transform:translate(-50%,-50%);border:3px solid var(--pri);border-radius:22px;box-shadow:0 0 0 100vmax rgba(0,0,0,.55)}
 .sct{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 24px);text-align:center;color:#fff;font-weight:600;padding:0 20px;text-shadow:0 1px 6px #000}
+.sman{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);display:flex;gap:8px}
+.sman input{flex:1}
 .sx{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);width:auto}
 .row>.chip{flex:none}
 </style>
@@ -107,14 +110,14 @@ textarea{width:100%;background:var(--inp);border:1px solid var(--ln);border-radi
 <body>
 <div class="w">
 <div class="stk" id="stk"><header class="hero"><div class="ht"><h1>Reception Team</h1><div class="dt" id="dt"></div></div></header>
-<div class="userbar" id="ub" style="display:none"><span id="wh"></span><button type="button" class="btn g" id="lo" onclick="logout()">Sign out</button></div></div><div id="stkSp"></div>
-<nav id="nav"></nav>
+<div class="userbar" id="ub" style="display:none"><span id="wh"></span><button type="button" class="btn g" id="lo" onclick="logout()">Sign out</button></div>
+<nav id="nav"></nav></div><div id="stkSp"></div>
 <main id="v"></main>
-<div id="scn"><video id="scv" playsinline muted></video><div class="sf"></div><div class="sct" id="sct"></div><button type="button" class="btn big out sx" onclick="closeScan()">Cancel</button></div>
+<div id="scn"><video id="scv" playsinline muted></video><div class="sf"></div><div class="sct" id="sct"></div><div class="sman"><input id="scm" inputmode="numeric" maxlength="4" placeholder="Or type the 4-digit code"><button type="button" class="btn" onclick="scanManual()">Go</button></div><button type="button" class="btn big out sx" onclick="closeScan()">Cancel</button></div>
 </div>
 <script>window.addEventListener('error',function(e){var v=document.getElementById('v');if(v&&!v.innerHTML.trim())v.innerHTML='<div class="box"><b>Something went wrong</b><p class="sub">'+String(e.message||e.error||'')+'</p></div>'})</script>
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const h=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -167,10 +170,10 @@ function render(){
  $('#wh').textContent=U?(U.role==='m'?'Manager':me().name):'';$('#ub').style.display=U?'flex':'none';
  if(!U){$('#nav').innerHTML='';$('#v').innerHTML=vLogin();return}
  const np=S.r.filter(x=>x.st==='p').length;
- const T=U.role==='m'?[['today','Today'],['cal','Calendar'],['qr','QR Code'],['inb','Requests'+(np?' ('+np+')':'')],['sch','Schedules'],['ded','Deductions'],['rep','Report'],['adm','Admin']]:[['me','Home'],['cal','Team calendar'],['req','Requests'],['acct','Account']];
+ const T=U.role==='m'?[['today','Today'],['cal','Calendar'],['inb','Requests'+(np?' ('+np+')':'')],['ded','Deductions'],['sch','Schedules'],['qr','QR Code'],['rep','Report'],['adm','Admin'],['set','Settings']]:[['me','Home'],['cal','Team calendar'],['req','Requests'],['acct','Account']];
  if(!T.find(t=>t[0]===tab))tab=T[0][0];
  $('#nav').innerHTML=T.map(([k,t])=>`<button type="button" class="${tab===k?'on':''}" onclick="tab='${k}';msg={};render()">${t}</button>`).join('');
- $('#v').innerHTML=({qr:qrBox,cal:vCal,ded:vDed,today:vToday,inb:vInb,sch:vSch,rep:vRep,adm:vAdm,me:vMe,req:vReq,acct:vAcct})[tab]();
+ $('#v').innerHTML=({set:vSet,qr:qrBox,cal:vCal,ded:vDed,today:vToday,inb:vInb,sch:vSch,rep:vRep,adm:vAdm,me:vMe,req:vReq,acct:vAcct})[tab]();
 }
 function vLogin(){const bio=(window.PublicKeyCredential||NB())?`<div class="act"><button type="button" class="btn g big" onclick="bioLogin()">Sign in with fingerprint / Face ID</button></div>`:'';
  return`<div class="box"><label>Sign in as</label><select id="lu"><option value="m">Manager</option>${opts(S.staff)}</select><label>PIN</label><input id="lp" type="password" inputmode="numeric" autocomplete="off"><div style="margin-top:14px"><button type="button" class="btn big" onclick="login()">Sign in</button></div>${bio}${scan==='ok'?'<div class="msg ok">Office QR scanned. Sign in to check in.</div>':scan==='bad'?'<div class="msg abs">That QR code is not valid for today.</div>':''}<div class="msg abs">${lm}</div></div>`}
@@ -224,10 +227,10 @@ async function bioLogin(){
 function vMe(){const s=me(),d=today(),st=status(s.id,d),a=st.a||{},ws=new Date();ws.setDate(ws.getDate()-((ws.getDay()+1)%7));
  const we=new Date(ws);we.setDate(we.getDate()+6);
  const wk=dates(ds(ws),ds(we)).map(x=>`<div class="row" ${x===d?'style="font-weight:700"':''}><span>${fd(x)}</span><span>${tx(eff(s.id,x))} ${swp(s.id,x)?'<span class="chip leave">Swapped</span>':''}</span></div>`).join('');
- return`<div class="box"><div class="row"><div><b>Today's shift</b><br><span class="sub">${tx(st.sh)}</span></div>${chip(st)}</div><small>In ${a.in?t12(a.in):'—'} · Out ${a.out?t12(a.out):'—'}</small>
+ return`<div class="box"><div class="row"><div><b>Today's shift</b><br><span class="sub">${tx(st.sh)}</span></div>${chip(st)}</div><small>In ${a.in?t12(a.in):'—'} · Out ${a.out?t12(a.out):'—'}</small>${wkLine()}
  ${devWarn()}${qrNote()}<div class="g2" style="margin-top:12px"><button type="button" class="btn big" onclick="punch('in')">Check in</button><button type="button" class="btn big out" onclick="punch('out')">Check out</button></div><div class="msg ${msg.c||''}">${msg.t||''}</div></div>
  <div class="box"><div class="sum"><div class="leave"><b>${annBal(s)}</b>annual days left</div><div class="ok"><b>${compBal(s)}</b>official holiday days</div></div><small>Official holiday days can be used as a «Comp day» vacation.</small></div>
- ${dedBox(s.id)}<div class="box"><b>Your schedule this week</b>${wk}</div>`}
+ ${myMonthBox()}${dedBox(s.id)}<div class="box"><b>Your schedule this week</b>${wk}</div>`}
 let scan=null,qrDay='',qrBase=S.set.qrBase||'https://claude.ai/artifact/DWgkxekGY2K63rWzYhahCD';
 const QRSEED='RT-office-2026';
 function dayCode(d){let x=7;for(const c of d+QRSEED+'q')x=(x*31+c.charCodeAt(0))%9000;return String(1000+x)}
@@ -308,8 +311,8 @@ function chPin(){const s=me(),a=$('#cp').value,b=$('#np').value,c=$('#np2').valu
 
 /* manager */
 function vToday(){const d=today(),c={ok:0,late:0,leave:0,abs:0};
- const rows=ACT().map(s=>{const st=status(s.id,d);if(c[st.k]!==undefined)c[st.k]++;return`<div class="row"><div><b>${h(s.name)}</b><br><small>Shift ${tx(st.sh)}</small><br><small>In ${st.a&&st.a.in?t12(st.a.in):'—'} · Out ${st.a&&st.a.out?t12(st.a.out):'—'}${st.a&&st.a.dist!=null?' · '+st.a.dist+' m from office':st.a&&st.a.via==='QR'?' · via QR':''}</small>${devLine(st.a,d,s.id)}</div>${chip(st)}</div>`}).join('');
- return`<div class="box">${rows}</div><div class="box"><div class="ov-h"><b>Attendance summary</b><small>${c.ok+c.late} of ${ACT().length} checked in</small></div><div class="bar">${[['ok',c.ok],['late',c.late],['leave',c.leave],['abs',c.abs],['off',Math.max(0,ACT().length-c.ok-c.late-c.leave-c.abs)]].filter(x=>x[1]>0).map(x=>`<i class="${x[0]}" style="flex:${x[1]}"></i>`).join('')}</div><div class="stats"><div class="st ok"><b>${c.ok}</b><span>Present</span></div><div class="st late"><b>${c.late}</b><span>Late</span></div><div class="st leave"><b>${c.leave}</b><span>Vacation</span></div><div class="st abs"><b>${c.abs}</b><span>Absent</span></div></div></div><small>Lateness is measured from each person's actual shift start (after any swap), with a ${S.set.grace}-minute grace period.</small>`}
+ const rows=ACT().map(s=>{const st=status(s.id,d);if(c[st.k]!==undefined)c[st.k]++;return`<div class="row"><div><b>${h(s.name)}</b><br><small>Shift ${tx(st.sh)}</small><br><small>In ${st.a&&st.a.in?t12(st.a.in):'—'} · Out ${st.a&&st.a.out?t12(st.a.out):'—'}${st.a&&st.a.dist!=null?' · '+st.a.dist+' m from office':st.a&&st.a.via==='QR'?' · via QR':''}</small>${exLine(s.id,d)}${devLine(st.a,d,s.id)}</div>${chip(st)}</div>`}).join('');
+ return`<div class="box">${rows}</div><div class="box"><div class="ov-h"><b>Attendance summary</b><small>${c.ok+c.late} of ${ACT().length} checked in</small></div><div class="bar">${[['ok',c.ok],['late',c.late],['leave',c.leave],['abs',c.abs],['off',Math.max(0,ACT().length-c.ok-c.late-c.leave-c.abs)]].filter(x=>x[1]>0).map(x=>`<i class="${x[0]}" style="flex:${x[1]}"></i>`).join('')}</div><div class="stats"><div class="st ok"><b>${c.ok}</b><span>Present</span></div><div class="st late"><b>${c.late}</b><span>Late</span></div><div class="st leave"><b>${c.leave}</b><span>Vacation</span></div><div class="st abs"><b>${c.abs}</b><span>Absent</span></div></div></div><small>Lateness is measured from each person's actual shift start (after any swap), with a ${S.set.grace}-minute grace period.</small>${manualBox()}`}
 function vInb(){const p=S.r.filter(x=>x.st==='p').reverse();
  const l=p.map(x=>{const s=S.staff.find(y=>y.id===x.sid);let ex='';
   if(x.ty==='lv')ex=`<small>${h(s.name)}'s balance: annual ${annBal(s)} · holiday days ${compBal(s)}</small><details><summary>Adjust another employee's hours (optional)</summary><div class="g2"><select id="js${x.id}"><option value="">—</option>${opts(S.staff.filter(y=>y.id!==x.sid))}</select><span class="tm"><input id="jf${x.id}" type="time"><input id="jt${x.id}" type="time"></span></div><small>Applied to the same dates as the vacation.</small></details>`;
@@ -328,8 +331,8 @@ function addOv(){const d=$('#od').value;if(!d)return;(S.ovr[schSid]=S.ovr[schSid
 function delOv(d){delete S.ovr[schSid][d];save();render()}
 function vRep(){const [y,m]=rm.split('-').map(Number),PD=dates(ds(new Date(y,m-2,26)),ds(new Date(y,m-1,25))),mo=d=>d>=PD[0]&&d<=PD[PD.length-1];
  const body=[],det=[];
- S.staff.filter(s=>s.on!==false||(s.left&&s.left>=PD[0])).forEach(s=>{let ok=0,lt=[],ab=[],c={ann:0,comp:0,unp:0},hr=0,sw=0,dd=0,L=[];
-  for(const d of PD){if(d>today())break;const st=status(s.id,d);
+ S.staff.filter(s=>s.on!==false||(s.left&&s.left>=PD[0])).forEach(s=>{let ok=0,lt=[],ab=[],c={ann:0,comp:0,unp:0},hr=0,sw=0,dd=0,L=[],exl=[];
+  for(const d of PD){if(d>today())break;const st=status(s.id,d);const wi=workInfo(s.id,d);if(wi&&wi.exceed)exl.push(fd(d)+' (-'+wi.short+' min)');
    if(st.k==='ok'||st.k==='late')ok++;if(st.k==='late')lt.push(fd(d)+' ('+t12(st.a.in)+')');if(st.k==='abs')ab.push(fd(d))}
   S.r.filter(x=>x.st==='ok').forEach(x=>{
    if(x.ty==='lv'&&x.sid===s.id){const dd=dates(x.f,x.t).filter(d=>mo(d)&&eff(s.id,d));if(dd.length){c[x.k]+=dd.length;L.push(`${KN[x.k]} vacation: ${dd.map(fd).join(', ')}`)}}
@@ -337,9 +340,9 @@ function vRep(){const [y,m]=rm.split('-').map(Number),PD=dates(ds(new Date(y,m-2
    if(x.ty==='sw'&&(x.sid===s.id||x.w===s.id)&&mo(x.d)){sw++;L.push(`Shift swap: ${fd(x.d)} with ${nm(x.sid===s.id?x.w:x.sid)}`)}});
   Object.keys(S.att).filter(mo).sort().forEach(k2=>{const x=S.att[k2][s.id];if(x&&x.fl&&!x.rv)L.push(`⚠ ${fd(k2)}: ${flTx(x.fl)} (${h(x.dl||'')})`)});
   S.ded.filter(x=>x.sid===s.id&&mo(x.d)).forEach(x=>{if(x.st==='ok')dd++;L.push(`Deduction: ${fd(x.d)} — ${amtTx(x)} — ${h(x.why)} (${x.st==='ok'?'Confirmed':'Waived'})`)});
-  body.push(`<tr><td class="cn"><b>${h(s.name)}</b></td><td>${ok}</td><td class="late">${lt.length}</td><td class="abs">${ab.length}</td><td>${c.ann}</td><td>${c.comp}</td><td>${c.unp}</td><td>${hr}</td><td>${sw}</td><td>${dd}</td></tr>`);
-  det.push(`<details><summary>${h(s.name)}</summary>${lt.length?`<p class="late">Late: ${lt.join(', ')}</p>`:''}${ab.length?`<p class="abs">Absent: ${ab.join(', ')}</p>`:''}${L.map(t=>`<p>${t}</p>`).join('')||(lt.length||ab.length?'':'<p class="sub">Nothing to report.</p>')}</details>`)});
- return`<div class="box"><label>Work month (26th to 25th, named by the month it ends)</label><input type="month" value="${rm}" onchange="rm=this.value||rm;render()"><small>${fd(PD[0])} → ${fd(PD[PD.length-1])}</small></div><div class="box tw" style="padding:0"><table class="grid"><tr><th class="cn">Employee</th><th>Present</th><th>Late</th><th>Absent</th><th>Annual</th><th>Comp</th><th>Unpaid</th><th>Perm</th><th>Swaps</th><th>Deduct.</th></tr>${body.join('')}</table></div><div class="box"><b>Details by day</b>${det.join('')}</div>`}
+  body.push(`<tr><td class="cn"><b>${h(s.name)}</b></td><td>${ok}</td><td class="late">${lt.length}</td><td class="late">${exl.length}</td><td class="abs">${ab.length}</td><td>${c.ann}</td><td>${c.comp}</td><td>${c.unp}</td><td>${hr}</td><td>${sw}</td><td>${dd}</td></tr>`);
+  det.push(`<details><summary>${h(s.name)}</summary>${lt.length?`<p class="late">Late: ${lt.join(', ')}</p>`:''}${exl.length?`<p class="late">Exceed grace: ${exl.join(', ')}</p>`:''}${ab.length?`<p class="abs">Absent: ${ab.join(', ')}</p>`:''}${L.map(t=>`<p>${t}</p>`).join('')||(lt.length||ab.length||exl.length?'':'<p class="sub">Nothing to report.</p>')}</details>`)});
+ return`<div class="box"><label>Work month (26th to 25th, named by the month it ends)</label><input type="month" value="${rm}" onchange="rm=this.value||rm;render()"><small>${fd(PD[0])} → ${fd(PD[PD.length-1])}</small><div class="act"><button type="button" class="btn" onclick="exportXlsx()">Export to Excel</button></div><div class="msg" id="exm"></div></div><div class="box tw" style="padding:0"><table class="grid"><tr><th class="cn">Employee</th><th>Present</th><th>Late</th><th>Exceed</th><th>Absent</th><th>Annual</th><th>Comp</th><th>Unpaid</th><th>Perm</th><th>Swaps</th><th>Deduct.</th></tr>${body.join('')}</table></div><div class="box"><b>Details by day</b>${det.join('')}</div>`}
 const amtTx=x=>({0.25:'¼ day',0.5:'½ day',1:'1 day'}[x.amt]||x.amt+' days');
 const dChip=x=>`<span class="chip ${x.st==='ok'?'abs':'ok'}">${x.st==='ok'?'Confirmed':'Waived'}</span>`;
 function dedBox(id){const l=S.ded.filter(x=>x.sid===id).reverse();return l.length?`<div class="box"><b>Deductions</b>${l.map(x=>`<div class="row"><div>${fd(x.d)} · ${amtTx(x)}<br><small>${h(x.why)}</small></div>${dChip(x)}</div>`).join('')}</div>`:''}
@@ -368,7 +371,7 @@ function vAdm(){const hl=S.hol.map(x=>`<div class="row"><span>${h(x.n)} · ${fd(
  <div class="box"><b>Team</b> <small>(name · PIN reset · annual days)</small><div style="margin-top:8px">${st}</div></div>
  <div class="box"><b>Add new employee</b><label>Name</label><input id="en"><div class="g2"><div><label>PIN (4 to 8 digits)</label><input id="ep" inputmode="numeric"></div><div><label>Start date</label><input id="es" type="date" value="${today()}"></div></div><label>Annual vacation days</label><input id="ea" type="number" min="0" value="21"><div class="act"><button type="button" class="btn" onclick="addEmp()">Add employee</button></div><small>New employees get a default Sun to Thu 09:00 to 17:00 schedule. Change it from Schedules.</small></div>
  ${S.staff.some(s=>s.on===false)?`<div class="box"><b>Former employees</b>${S.staff.filter(s=>s.on===false).map(s=>`<div class="row"><span>${h(s.name)} <small>resigned ${s.left?fd(s.left):''}</small></span><button type="button" class="btn g" onclick="rehire('${s.id}')">Reactivate</button></div>`).join('')}<small>Their history stays in the reports.</small></div>`:''}
- <div class="box"><div class="g2"><div><label>Grace period (minutes)</label><input type="number" min="0" value="${S.set.grace}" onchange="S.set.grace=+this.value;save()"></div><div><label>Manager PIN</label><input value="${h(S.set.mpin)}" onchange="S.set.mpin=this.value;save()"></div></div></div>
+ <div class="box"><div class="g2"><div><label>Grace (minutes): late arrival or early leave</label><input type="number" min="0" value="${S.set.grace}" onchange="S.set.grace=+this.value;save()"></div><div><label>Manager PIN</label><input value="${h(S.set.mpin)}" onchange="S.set.mpin=this.value;save()"></div></div></div>
  <div class="box"><b>Manual attendance edit</b><label>Employee</label><select id="ms">${opts(S.staff)}</select><div class="g2"><div><label>Date</label><input id="md" type="date" value="${today()}"></div><div><label>In / Out</label><span class="tm"><input id="mi" type="time"><input id="mo" type="time"></span></div></div><div class="act"><button type="button" class="btn" onclick="man(0)">Save</button><button type="button" class="btn g" onclick="man(1)">Clear day</button></div></div>
  <div class="box"><b>Linked phones</b><p class="sub" style="margin:4px 0 8px">Each employee phone is linked on their first sign-in. A check-in from a different phone is flagged on the Today tab. If someone changes phone, unlink the old one and their next sign-in links the new one.</p>${devList()}</div>
  <div class="box"><b>Backup &amp; restore</b><p class="sub" style="margin:4px 0 0">Save a copy of all the data, or load a saved copy back. Keep backups private: they include PINs.</p><div class="act"><button type="button" class="btn" onclick="doBackup()">Backup</button><button type="button" class="btn g" onclick="doRestore()">Restore</button></div><textarea id="bk" placeholder="Backup text appears here. To restore, paste a backup here and press Restore."></textarea><label>Or choose a backup file</label><input type="file" accept=".json,application/json" onchange="readFile(this)"><div class="msg" id="bkm"></div></div>
@@ -453,7 +456,7 @@ async function loadAll(){
  ws.forEach(r=>{if(N.week[r.staff_id])N.week[r.staff_id][r.dow]=r.start_time?{s:tm5(r.start_time),e:tm5(r.end_time)}:null});
  ov.forEach(r=>{(N.ovr[r.staff_id]=N.ovr[r.staff_id]||{})[r.day]=r.start_time?{s:tm5(r.start_time),e:tm5(r.end_time)}:null});
  at.forEach(r=>{(N.att[r.day]=N.att[r.day]||{})[r.staff_id]={in:hm(r.check_in),out:hm(r.check_out),dist:r.dist,via:(r.via==='QR'||r.via==='GPS')?r.via:undefined,dev:r.device_id,dl:r.device_label,fl:r.flag?{k:r.flag,of:r.flag_of}:undefined,rv:r.reviewed?1:undefined}});
- rq.forEach(r=>N.r.push({id:r.id,sid:r.staff_id,ty:r.type,st:r.status,k:r.kind,f:r.date_from,t:r.date_to,d:r.day,hrs:r.hours,w:r.with_staff,why:r.reason||''}));
+ rq.forEach(r=>N.r.push({id:r.id,sid:r.staff_id,ty:r.type,st:r.status,k:r.kind,f:r.date_from,t:r.date_to,d:r.day,hrs:r.hours,w:r.with_staff,why:r.reason||'',cr:r.created_at}));
  if(U&&U.role==='e'){try{const [tv,ts]=await Promise.all([rpc('team_vacations'),rpc('team_swaps')]);
   tv.filter(x=>x.staff_id!==U.id).forEach(x=>N.r.push({id:'tv'+x.staff_id+x.date_from,sid:x.staff_id,ty:'lv',st:'ok',k:'ann',f:x.date_from,t:x.date_to,why:''}));
   ts.filter(x=>x.staff_id!==U.id&&x.with_staff!==U.id).forEach(x=>N.r.push({id:'ts'+x.staff_id+x.day,sid:x.staff_id,ty:'sw',st:'ok',w:x.with_staff,d:x.day,why:''}))}catch(e){}}
@@ -558,7 +561,8 @@ async function doPunch(kind,o){
   if(r.flag)msg.t+='. Note: this phone is not linked to you, your manager will see it.'}
  catch(e){msg=punchErr(e)}
  render()}
-function punch(t){
+function punch(t,force){
+ if(t==='out'&&!force&&earlyWarn(scanCode&&scan==='ok'&&qrDay===today()?{code:scanCode}:null))return;
  if(scanCode&&scan==='ok'&&qrDay===today())return doPunch(t,{code:scanCode});
  if(!navigator.geolocation){msg={t:'Location is not supported on this device.',c:'abs'};return render()}
  msg={t:'Checking your location...',c:'late'};render();
@@ -567,6 +571,7 @@ function onScan(code){if(!U||U.role!=='e')return;scanCode=code;scan='ok';qrDay=t
  const r=(S.att[today()]||{})[U.id]||{},n=nowHM(),gap=r.in?(+n.slice(0,2)*60+ +n.slice(3,5))-(+r.in.slice(0,2)*60+ +r.in.slice(3,5)):0;
  if(!r.in)return doPunch('in',{code});
  if(gap<2){msg={t:'You already checked in at '+t12(r.in),c:'late'};return render()}
+ if(earlyWarn({code}))return;
  doPunch('out',{code})}
 function hs(){const m=location.hash.match(/^#in-(\d{4})$/);if(m){scanCode=m[1];scan='ok';qrDay=today();if(U&&U.role==='e')tab='me'}render()}
 function bindDev(){}
@@ -641,19 +646,15 @@ function vAdm(){
  const hl=S.hol.map(x=>`<div class="row"><span>${h(x.n)} · ${fd(x.d)}</span><button type="button" class="btn r" onclick="delHol('${x.id}')">Remove</button></div>`).join('');
  const st=ACT().map(s=>`<div class="g2" style="margin-bottom:8px"><input value="${h(s.name)}" onchange="ed('${s.id}','name',this.value)"><span class="tm"><input placeholder="New PIN" inputmode="numeric" onchange="resetPin('${s.id}',this.value,this)"><input type="number" value="${s.ann}" onchange="ed('${s.id}','ann',+this.value)"></span></div><div class="act" style="margin:-2px 0 12px;align-items:center"><span class="sub">Start date</span><input type="date" value="${s.from||''}" onchange="ed('${s.id}','from',this.value)" style="width:auto;flex:1"><button type="button" class="btn r" onclick="empLeft('${s.id}')">Resign</button></div>`).join('');
  const pend=S.pend.length?`<div class="box"><b>Sign-up requests</b><p class="sub" style="margin:4px 0 8px">People who created an account and are waiting for approval.</p>${S.pend.map(p=>`<div class="row"><span>${h(p.name)}</span><span class="act" style="margin:0"><button type="button" class="btn" style="min-height:36px;padding:4px 12px" onclick="approvePend('${p.id}')">Approve</button><button type="button" class="btn r" style="min-height:36px;padding:4px 12px" onclick="rejectPend('${p.id}')">Remove</button></span></div>`).join('')}</div>`:'';
- return`${bioBox()}
- <div class="box"><b>Office location</b><p class="sub" style="margin:4px 0">${S.set.office?'Set ✓ ('+S.set.office.lat.toFixed(4)+', '+S.set.office.lng.toFixed(4)+')':'Not set yet'}</p><label>Allowed distance (meters)</label><input type="number" min="20" value="${S.set.rad||150}" onchange="setRad(this.value)"><div class="act"><button type="button" class="btn" onclick="setOffice()">Set office location from where I am now</button></div><small>Stand inside the office when you press it. Employees can only check in or out within the allowed distance.</small></div>
+ return`<div class="box"><b>Office location</b><p class="sub" style="margin:4px 0">${S.set.office?'Set ✓ ('+S.set.office.lat.toFixed(4)+', '+S.set.office.lng.toFixed(4)+')':'Not set yet'}</p><label>Allowed distance (meters)</label><input type="number" min="20" value="${S.set.rad||150}" onchange="setRad(this.value)"><div class="act"><button type="button" class="btn" onclick="setOffice()">Set office location from where I am now</button></div><small>Stand inside the office when you press it. Employees can only check in or out within the allowed distance.</small></div>
  <div class="box"><b>Official holidays</b> <small>(each one adds a day to every employee's balance)</small><div class="g2"><div><label>Date</label><input id="hd" type="date" value="${today()}"></div><div><label>Name</label><input id="hn"></div></div><div class="act"><button type="button" class="btn" onclick="addHol()">Add</button></div>${hl?'<div style="margin-top:10px">'+hl+'</div>':''}</div>
  ${pend}
  <div class="box"><b>Team</b> <small>(name · set a new PIN · annual days)</small><div style="margin-top:8px">${st||'<small>No employees yet.</small>'}</div></div>
  <div class="box"><b>Add new employee</b><label>Name</label><input id="en"><div class="g2"><div><label>PIN (4 to 8 digits)</label><input id="ep" inputmode="numeric"></div><div><label>Start date</label><input id="es" type="date" value="${today()}"></div></div><label>Annual vacation days</label><input id="ea" type="number" min="0" value="21"><div class="act"><button type="button" class="btn" onclick="addEmp()">Add employee</button></div><small>New employees get a default Sun to Thu 09:00 to 17:00 schedule. Change it from Schedules.</small></div>
  ${S.staff.some(s=>s.on===false)?`<div class="box"><b>Former employees</b>${S.staff.filter(s=>s.on===false).map(s=>`<div class="row"><span>${h(s.name)} <small>resigned ${s.left?fd(s.left):''}</small></span><button type="button" class="btn g" onclick="rehire('${s.id}')">Reactivate</button></div>`).join('')}<small>Their history stays in the reports.</small></div>`:''}
- <div class="box"><label>Grace period (minutes)</label><input type="number" min="0" value="${S.set.grace}" onchange="setGrace(this.value)"></div>
- ${pinBox()}
- <div class="box"><b>Manual attendance edit</b><label>Employee</label><select id="ms">${opts(S.staff)}</select><div class="g2"><div><label>Date</label><input id="md" type="date" value="${today()}"></div><div><label>In / Out</label><span class="tm"><input id="mi" type="time"><input id="mo" type="time"></span></div></div><div class="act"><button type="button" class="btn" onclick="man(0)">Save</button><button type="button" class="btn g" onclick="man(1)">Clear day</button></div></div>
+ <div class="box"><label>Grace (minutes): late arrival or early leave</label><input type="number" min="0" value="${S.set.grace}" onchange="setGrace(this.value)"></div>
  <div class="box"><b>Linked phones</b><p class="sub" style="margin:4px 0 8px">Each employee phone is linked on their first sign-in. A check-in from a different phone is flagged on the Today tab. If someone changes phone, unlink the old one and their next sign-in links the new one.</p>${devList()}</div>
- <div class="box"><b>Backup &amp; restore</b><p class="sub" style="margin:4px 0 0">Save a copy of all the data, or load a saved copy back. Keep backups private: they contain names and records.</p><div class="act"><button type="button" class="btn" onclick="doBackup()">Backup</button><button type="button" class="btn g" onclick="doRestore()">Restore</button></div><textarea id="bk" placeholder="Backup text appears here. To restore, paste a backup here and press Restore."></textarea><label>Or choose a backup file</label><input type="file" accept=".json,application/json" onchange="readFile(this)"><div class="msg" id="bkm"></div><small>PINs are not part of the backup. They stay in Supabase.</small></div>
- <div class="box"><b>Reset</b><p class="sub" style="margin:4px 0 0">Make a backup first. Resets cannot be undone.</p><div class="act"><button type="button" class="btn r" onclick="resetRecords()">Reset records</button><button type="button" class="btn r" onclick="resetAll()">Reset everything</button></div><small>Reset records clears attendance, requests, deductions, holidays and date changes, and keeps the team, schedules and settings. Reset everything also clears linked phones, the office location and settings, and puts schedules back to the default. Employee accounts always stay.</small></div>`}
+ `}
 
 /* ---- backup / restore / reset (data lives in Supabase) ---- */
 async function tblAll(n){let out=[],off=0;for(;;){const r=await tbl(n,'select=*&limit=1000&offset='+off);out=out.concat(r);if(r.length<1000)break;off+=1000}return out}
@@ -694,8 +695,109 @@ async function resetAll(){if(!confirm('Reset EVERYTHING? All records, linked pho
   await upd('settings','id=eq.1',{office_lat:null,office_lng:null,radius:150,grace:15});
   await loadAll();render();alert('Everything was reset')}catch(e){alert('Could not reset: '+errTx(e))}}
 
+/* ---- Excel export (report tab) ---- */
+function loadXlsx(){return new Promise((res,rej)=>{if(window.XLSX)return res();const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=()=>res();s.onerror=()=>rej(new Error('Could not load the Excel library. Check your connection.'));document.head.appendChild(s)})}
+function exportRows(){
+ const [y,m]=rm.split('-').map(Number),PD=dates(ds(new Date(y,m-2,26)),ds(new Date(y,m-1,25))),a=PD[0],b=PD[PD.length-1],t0=today(),inP=d=>d>=a&&d<=b;
+ const staff=S.staff.filter(s=>s.on!==false||(s.left&&s.left>=a));
+ const sum=[['Employee','Present days','Late','Absent days','Annual vacation days','Comp days','Unpaid days','Permission hours','Shift swaps','Deductions (count)','Deductions (days)','Exceed grace days','Hours worked']];
+ const daily=[['Date','Day','Employee','Shift','Status','Check in','Check out','Hours worked','Required hours','Shortfall (min)','Exceed grace','Method','Distance (m)','Phone','Phone note']];
+ staff.forEach(s=>{let ok=0,lt=0,ab=0,hr=0,sw=0,dn=0,dd=0,ex=0,tw=0;const c={ann:0,comp:0,unp:0};
+  PD.forEach(d=>{if(d>t0)return;const st=status(s.id,d),r=st.a||{};
+   if(st.k==='ok'||st.k==='late')ok++;if(st.k==='late')lt++;if(st.k==='abs')ab++;
+   const w=workInfo(s.id,d);if(w&&w.worked!=null){tw+=Math.max(0,w.worked);if(w.exceed)ex++}
+   daily.push([d,DN[P(d).getDay()],s.name,st.sh?(t12(st.sh.s)+' - '+(st.sh.e?t12(st.sh.e):'')):'',st.t,r.in?t12(r.in):'',r.out?t12(r.out):'',w&&w.worked!=null?Math.round(Math.max(0,w.worked)/60*100)/100:'',w?Math.round(w.req/60*100)/100:'',w&&w.exceed?w.short:'',w&&w.worked!=null?(w.exceed?'Yes':'No'):'',r.via||(r.in?'Manual':''),r.dist==null?'':r.dist,r.dl||'',r.fl&&!r.rv?flTx(r.fl):''])});
+  S.r.filter(x=>x.st==='ok'&&x.sid===s.id).forEach(x=>{
+   if(x.ty==='lv'){const n=dates(x.f,x.t).filter(d=>inP(d)&&eff(s.id,d)).length;if(c[x.k]!==undefined)c[x.k]+=n}
+   if(x.ty==='pm'&&inP(x.d))hr+=+x.hrs||0;
+   if(x.ty==='sw'&&inP(x.d))sw++});
+  S.r.filter(x=>x.st==='ok'&&x.ty==='sw'&&x.w===s.id&&inP(x.d)).forEach(()=>sw++);
+  S.ded.filter(x=>x.sid===s.id&&inP(x.d)&&x.st==='ok').forEach(x=>{dn++;dd+=x.amt});
+  sum.push([s.name,ok,lt,ab,c.ann,c.comp,c.unp,hr,sw,dn,dd,ex,Math.round(tw/60*100)/100])});
+ const req=[['Employee','Type','Vacation type','From','To','Working days','Permission hours','Swap with','Reason','Status','Requested on']];
+ S.r.filter(x=>!/^t[vs]/.test(String(x.id))&&(x.ty==='lv'?(x.f<=b&&x.t>=a):inP(x.d))).sort((p,q)=>String(p.cr||'').localeCompare(String(q.cr||''))).forEach(x=>{
+  const lv=x.ty==='lv';req.push([nm(x.sid),{lv:'Vacation',pm:'Permission',sw:'Shift swap'}[x.ty],lv?KN[x.k]:'',lv?x.f:x.d,lv?x.t:x.d,lv?dates(x.f,x.t).filter(d=>eff(x.sid,d)).length:'',x.ty==='pm'?(+x.hrs||0):'',x.ty==='sw'?nm(x.w):'',x.why||'',STN[x.st][0],x.cr?String(x.cr).slice(0,10):''])});
+ return{sum,daily,req,a,b}}
+async function exportXlsx(){const m=(t,c)=>{const e=$('#exm');if(e){e.textContent=t;e.className='msg '+(c||'')}};
+ try{m('Preparing the file...','late');await loadXlsx();const R=exportRows(),wb=XLSX.utils.book_new();
+  [['Summary',R.sum],['Daily attendance',R.daily],['Requests',R.req]].forEach(([n,rows])=>{const ws=XLSX.utils.aoa_to_sheet(rows);
+   ws['!cols']=rows[0].map((_,i)=>({wch:Math.min(34,Math.max(10,...rows.map(r=>String(r[i]==null?'':r[i]).length+2)))}));XLSX.utils.book_append_sheet(wb,ws,n)});
+  XLSX.writeFile(wb,'Reception-Team-'+R.a+'-to-'+R.b+'.xlsx');m('File created. Check your Downloads.','ok')}
+ catch(e){m('Could not export: '+errTx(e),'abs')}}
+
+/* ---- working-hours rule: required time = shift length - grace - approved permission hours ---- */
+const toMin=t=>+t.slice(0,2)*60+ +t.slice(3,5);
+const minToHM=m=>pad2(Math.floor(m/60))+':'+pad2(m%60);
+const nowMin=()=>toMin(nowHM());
+const dur=m=>Math.floor(m/60)+'h '+pad2(m%60)+'m';
+let pendOut=null;
+function workInfo(sid,d){const sh=eff(sid,d);if(!sh||!sh.s||!sh.e||toMin(sh.e)<=toMin(sh.s))return null;
+ const r=(S.att[d]||{})[sid],perm=S.r.filter(x=>x.ty==='pm'&&x.st==='ok'&&x.sid===sid&&x.d===d).reduce((a,x)=>a+(+x.hrs||0),0);
+ const len=toMin(sh.e)-toMin(sh.s),req=Math.max(0,len-(+S.set.grace||0)-Math.round(perm*60)),o={req,len,perm,sh};
+ if(r&&r.in){o.start=Math.max(toMin(r.in),toMin(sh.s));o.safe=o.start+req;
+  if(r.out){o.worked=toMin(r.out)-o.start;o.short=Math.max(0,req-o.worked);o.exceed=o.worked<req}}
+ return o}
+function exLine(sid,d){const w=workInfo(sid,d);if(!w)return'';
+ if(w.exceed)return`<br><small class="late">Worked ${dur(Math.max(0,w.worked))} of ${dur(w.req)} · Exceed grace (${w.short} min)</small>`;
+ const r=(S.att[d]||{})[sid];if(r&&r.in&&!r.out&&d<today())return'<br><small class="late">Missing check-out</small>';return''}
+function wkLine(){const w=workInfo(U.id,today());if(!w||w.start==null)return'';const r=(S.att[today()]||{})[U.id]||{};
+ if(r.out)return w.exceed?`<br><small class="late">Worked ${dur(Math.max(0,w.worked))} of ${dur(w.req)} required · Exceed grace by ${w.short} min</small>`:`<br><small class="ok">Worked ${dur(w.worked)} of ${dur(w.req)} required ✓</small>`;
+ return`<br><small>Earliest check-out without Exceed grace: <b>${t12(minToHM(w.safe))}</b></small>`}
+function earlyWarn(o){if(!U||U.role!=='e')return false;const w=workInfo(U.id,today());if(!w||w.start==null)return false;
+ const r=(S.att[today()]||{})[U.id]||{};if(r.out)return false;const n=nowMin();if(n>=w.safe)return false;
+ const worked=Math.max(0,n-w.start),short=w.req-worked;pendOut=o||null;
+ msg={t:`⚠ You are leaving early.<br>Worked so far: <b>${dur(worked)}</b> · Required: <b>${dur(w.req)}</b>.<br>You can check out without Exceed grace from <b>${t12(minToHM(w.safe))}</b>. Checking out now records an Exceed grace of <b>${short} min</b>.<div class="act"><button type="button" class="btn r" onclick="punchForce()">Check out anyway</button><button type="button" class="btn g" onclick="msg={};render()">Cancel</button></div>`,c:'late'};
+ render();return true}
+function punchForce(){const o=pendOut;pendOut=null;msg={};if(o&&o.code)return doPunch('out',{code:o.code});punch('out',true)}
+
+/* ---- employee: simple summary of my month ---- */
+let myOff=0;
+function myMonthBox(){const n=new Date(),base=new Date(n.getFullYear(),n.getMonth()+(n.getDate()>=26?1:0)+myOff,1),y=base.getFullYear(),m=base.getMonth()+1;
+ const PD=dates(ds(new Date(y,m-2,26)),ds(new Date(y,m-1,25))),a=PD[0],b=PD[PD.length-1],t0=today(),sid=U.id;
+ let late=0,ex=0,vac=0,pm=0,ph=0;
+ PD.forEach(d=>{if(d>t0)return;const st=status(sid,d);if(st.k==='late')late++;const w=workInfo(sid,d);if(w&&w.exceed)ex++});
+ S.r.filter(x=>x.st==='ok'&&x.sid===sid).forEach(x=>{
+  if(x.ty==='lv')vac+=dates(x.f,x.t).filter(d=>d>=a&&d<=b&&eff(sid,d)).length;
+  if(x.ty==='pm'&&x.d>=a&&x.d<=b){pm++;ph+=+x.hrs||0}});
+ return`<div class="box"><div class="ov-h"><b>${myOff===0?'My month':'Month summary'}</b><span class="tm" style="flex:none"><button type="button" class="btn g" style="min-height:32px;padding:2px 12px" onclick="myOff--;render()">‹</button><button type="button" class="btn g" style="min-height:32px;padding:2px 12px" ${myOff>=0?'disabled':''} onclick="myOff++;render()">›</button></span></div><small>${fd(a)} → ${fd(b)}</small><div class="stats" style="margin-top:12px"><div class="st late"><b>${late}</b><span>Late days</span></div><div class="st leave"><b>${vac}</b><span>Vacation days</span></div><div class="st rest"><b>${pm}</b><span>Permissions</span></div><div class="st late"><b>${ex}</b><span>Exceed grace</span></div></div>${ph?`<small style="display:block;margin-top:10px">Permission hours this month: ${ph}</small>`:''}</div>`}
+
+/* ---- in-app QR scanner (native BarcodeDetector first, jsQR as backup, typed code as last resort) ---- */
+let bdet=null,jsqrLoading=false;
+function setSct(t){const e=$('#sct');if(e)e.textContent=t}
+function loadJsQR(){if(typeof jsQR==='function'||jsqrLoading)return;jsqrLoading=true;const urls=['https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js','https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js'];let i=0;
+ const fail=()=>{jsqrLoading=false;if(scnOn)setSct('Scanner could not load. Type the code below instead.')};
+ const next=()=>{const s=document.createElement('script');s.src=urls[i];
+  s.onload=()=>{jsqrLoading=false;if(scnOn)setSct(typeof jsQR==='function'?'Point the camera at the office QR code':'Scanner could not load. Type the code below instead.')};
+  s.onerror=()=>{i++;if(i<urls.length)next();else fail()};document.head.appendChild(s)};next()}
+async function openScan(){
+ $('#scn').style.display='flex';scnOn=true;$('#scm').value='';setSct('Starting the camera...');
+ try{
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('Camera is not available here');
+  scnStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false});
+  const v=$('#scv');v.srcObject=scnStream;v.setAttribute('playsinline','');v.muted=true;try{await v.play()}catch(e){}
+  bdet=null;if('BarcodeDetector' in window){try{bdet=new BarcodeDetector({formats:['qr_code']})}catch(e){bdet=null}}
+  if(!bdet&&typeof jsQR!=='function'){setSct('Loading the scanner...');loadJsQR()}else setSct('Point the camera at the office QR code');
+  scanLoop()}
+ catch(e){setSct('Camera problem: '+String(errTx(e)).slice(0,70)+'. Type the code below instead.')}}
+function closeScan(){scnOn=false;if(scnStream){scnStream.getTracks().forEach(t=>t.stop());scnStream=null}try{$('#scv').srcObject=null}catch(e){}$('#scn').style.display='none'}
+function scanManual(){const c=($('#scm').value||'').trim();if(!/^\d{4}$/.test(c)){setSct('Type the 4-digit code that is shown with the QR code.');return}closeScan();onScan(c)}
+function scanLoop(){const v=$('#scv'),c=document.createElement('canvas');let busy=false;
+ const tick=async()=>{if(!scnOn)return;
+  if(!busy&&v.readyState>=2&&v.videoWidth){busy=true;let data=null;
+   try{if(bdet){const r=await bdet.detect(v);if(r&&r[0])data=r[0].rawValue}}catch(e){}
+   if(!data&&typeof jsQR==='function'){try{const w=Math.min(1280,v.videoWidth),hh=Math.round(w*v.videoHeight/v.videoWidth);c.width=w;c.height=hh;
+    const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(v,0,0,w,hh);const im=x.getImageData(0,0,w,hh),r=jsQR(im.data,w,hh,{inversionAttempts:'attemptBoth'});if(r&&r.data)data=r.data}catch(e){}}
+   busy=false;
+   if(data){const m=String(data).match(/#?in-(\d{4})/);if(m){closeScan();return onScan(m[1])}setSct('That QR code is not the office code.')}}
+  if(scnOn)setTimeout(tick,150)};
+ tick()}
+
+function manualBox(){return`<div class="box"><b>Manual attendance edit</b><label>Employee</label><select id="ms">${opts(S.staff)}</select><div class="g2"><div><label>Date</label><input id="md" type="date" value="${today()}"></div><div><label>In / Out</label><span class="tm"><input id="mi" type="time"><input id="mo" type="time"></span></div></div><div class="act"><button type="button" class="btn" onclick="man(0)">Save</button><button type="button" class="btn g" onclick="man(1)">Clear day</button></div></div>`}
+function vSet(){return bioBox()+pinBox()+`<div class="box"><b>Backup &amp; restore</b><p class="sub" style="margin:4px 0 0">Save a copy of all the data, or load a saved copy back. Keep backups private: they contain names and records.</p><div class="act"><button type="button" class="btn" onclick="doBackup()">Backup</button><button type="button" class="btn g" onclick="doRestore()">Restore</button></div><textarea id="bk" placeholder="Backup text appears here. To restore, paste a backup here and press Restore."></textarea><label>Or choose a backup file</label><input type="file" accept=".json,application/json" onchange="readFile(this)"><div class="msg" id="bkm"></div><small>PINs are not part of the backup. They stay in Supabase.</small></div>
+ <div class="box"><b>Reset</b><p class="sub" style="margin:4px 0 0">Make a backup first. Resets cannot be undone.</p><div class="act"><button type="button" class="btn r" onclick="resetRecords()">Reset records</button><button type="button" class="btn r" onclick="resetAll()">Reset everything</button></div><small>Reset records clears attendance, requests, deductions, holidays and date changes, and keeps the team, schedules and settings. Reset everything also clears linked phones, the office location and settings, and puts schedules back to the default. Employee accounts always stay.</small></div>`}
+
 function sizeSp(){const e=$('#stk'),hr=e.querySelector('.hero'),c=e.classList.contains('c');hr.style.transition='none';e.classList.remove('c');const H=e.offsetHeight;if(c)e.classList.add('c');void hr.offsetHeight;hr.style.transition='';$('#stkSp').style.height=H+'px'}
-const _render=render;render=function(){bindDev();_render();sizeSp()};
+const _render=render;render=function(){bindDev();_render();sizeSp();try{const on=document.querySelector('#nav .on');if(on)on.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}};
 addEventListener('hashchange',hs);addEventListener('resize',sizeSp);
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 boot();
