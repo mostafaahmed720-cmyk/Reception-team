@@ -73,6 +73,7 @@ h1{margin:0}
 .hero .ht{position:relative;padding:0 16px}
 .hero h1{font-size:23px;font-weight:700;letter-spacing:.3px;color:#fff;text-shadow:0 1px 10px #000}
 nav:empty{display:none}
+.stats.g3{grid-template-columns:repeat(3,1fr);row-gap:14px}.stats.g3 .st:nth-child(3n+1){border-left:0}
 .stk nav{margin:8px 16px 0}
 .hero .dt{font-size:13px;color:#b9c7e0;margin-top:2px}
 .ov-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -85,7 +86,7 @@ nav:empty{display:none}
 .st b{display:block;font-size:28px;font-weight:700;line-height:1.15}
 .st span{display:block;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);margin-top:2px}
 .en{color:var(--end)}
-.grid{table-layout:fixed;width:892px;min-width:0;border-collapse:separate;border-spacing:0;border-top:1px solid var(--ln);border-left:1px solid var(--ln)}
+.grid{table-layout:fixed;width:970px;min-width:0;border-collapse:separate;border-spacing:0;border-top:1px solid var(--ln);border-left:1px solid var(--ln)}
 .grid th,.grid td{width:78px;padding:11px 4px;text-align:center;vertical-align:middle;border-right:1px solid var(--ln);border-bottom:1px solid var(--ln)}
 .grid th{background:#14151a;color:var(--mut);font-weight:600;font-size:13px}
 .grid .cn{width:112px;text-align:start;padding-left:10px;position:sticky;left:0;z-index:1;background:var(--sf)}
@@ -224,10 +225,10 @@ async function bioLogin(){
  render()}
 
 /* employee */
-function vMe(){const s=me(),d=today(),st=status(s.id,d),a=st.a||{},ws=new Date();ws.setDate(ws.getDate()-((ws.getDay()+1)%7));
+function vMe(){const s=me(),op=openPrev(s.id),d=op?op.d:today(),st=status(s.id,d),a=st.a||{},ws=new Date();ws.setDate(ws.getDate()-((ws.getDay()+1)%7));
  const we=new Date(ws);we.setDate(we.getDate()+6);
  const wk=dates(ds(ws),ds(we)).map(x=>`<div class="row" ${x===d?'style="font-weight:700"':''}><span>${fd(x)}</span><span>${tx(eff(s.id,x))} ${swp(s.id,x)?'<span class="chip leave">Swapped</span>':''}</span></div>`).join('');
- return`<div class="box"><div class="row"><div><b>Today's shift</b><br><span class="sub">${tx(st.sh)}</span></div>${chip(st)}</div><small>In ${a.in?t12(a.in):'—'} · Out ${a.out?t12(a.out):'—'}</small>${wkLine()}
+ return`<div class="box"><div class="row"><div><b>${op?"Yesterday's shift (still open)":"Today's shift"}</b><br><span class="sub">${tx(st.sh)}</span></div>${chip(st)}</div><small>In ${a.in?t12(a.in):'—'} · Out ${a.out?t12(a.out):'—'}</small>${wkLine()}
  ${devWarn()}${qrNote()}<div class="g2" style="margin-top:12px"><button type="button" class="btn big" onclick="punch('in')">Check in</button><button type="button" class="btn big out" onclick="punch('out')">Check out</button></div><div class="msg ${msg.c||''}">${msg.t||''}</div></div>
  <div class="box"><div class="sum"><div class="leave"><b>${annBal(s)}</b>annual days left</div><div class="ok"><b>${compBal(s)}</b>official holiday days</div></div><small>Official holiday days can be used as a «Comp day» vacation.</small></div>
  ${myMonthBox()}${dedBox(s.id)}<div class="box"><b>Your schedule this week</b>${wk}</div>`}
@@ -310,9 +311,9 @@ function chPin(){const s=me(),a=$('#cp').value,b=$('#np').value,c=$('#np2').valu
  s.pin=b;save();m('PIN updated','ok')}
 
 /* manager */
-function vToday(){const d=today(),c={ok:0,late:0,leave:0,abs:0};
+function vToday(){const d=biz(),c={ok:0,late:0,leave:0,abs:0};
  const rows=ACT().map(s=>{const st=status(s.id,d);if(c[st.k]!==undefined)c[st.k]++;return`<div class="row"><div><b>${h(s.name)}</b><br><small>Shift ${tx(st.sh)}</small><br><small>In ${st.a&&st.a.in?t12(st.a.in):'—'} · Out ${st.a&&st.a.out?t12(st.a.out):'—'}${st.a&&st.a.dist!=null?' · '+st.a.dist+' m from office':st.a&&st.a.via==='QR'?' · via QR':''}</small>${exLine(s.id,d)}${devLine(st.a,d,s.id)}</div>${chip(st)}</div>`}).join('');
- return`<div class="box">${rows}</div><div class="box"><div class="ov-h"><b>Attendance summary</b><small>${c.ok+c.late} of ${ACT().length} checked in</small></div><div class="bar">${[['ok',c.ok],['late',c.late],['leave',c.leave],['abs',c.abs],['off',Math.max(0,ACT().length-c.ok-c.late-c.leave-c.abs)]].filter(x=>x[1]>0).map(x=>`<i class="${x[0]}" style="flex:${x[1]}"></i>`).join('')}</div><div class="stats"><div class="st ok"><b>${c.ok}</b><span>Present</span></div><div class="st late"><b>${c.late}</b><span>Late</span></div><div class="st leave"><b>${c.leave}</b><span>Vacation</span></div><div class="st abs"><b>${c.abs}</b><span>Absent</span></div></div></div><small>Lateness is measured from each person's actual shift start (after any swap), with a ${S.set.grace}-minute grace period.</small>${manualBox()}`}
+ return`<div class="box">${rows}</div>${nightBox()}<div class="box"><div class="ov-h"><b>Attendance summary</b><small>${c.ok+c.late} of ${ACT().length} checked in</small></div><div class="bar">${[['ok',c.ok],['late',c.late],['leave',c.leave],['abs',c.abs],['off',Math.max(0,ACT().length-c.ok-c.late-c.leave-c.abs)]].filter(x=>x[1]>0).map(x=>`<i class="${x[0]}" style="flex:${x[1]}"></i>`).join('')}</div><div class="stats" style="grid-template-columns:repeat(5,1fr)"><div class="st ok"><b>${c.ok}</b><span>Present</span></div><div class="st late"><b>${c.late}</b><span>Late</span></div><div class="st leave"><b>${c.leave}</b><span>Vacation</span></div><div class="st abs"><b>${c.abs}</b><span>Absent</span></div><div class="st late"><b>${forgotYesterday().length}</b><span>Forget yesterday</span></div></div></div>${forgetBox()}<small>Lateness is measured from each person's actual shift start (after any swap), with a ${S.set.grace}-minute grace period.</small>${manualBox()}`}
 function vInb(){const p=S.r.filter(x=>x.st==='p').reverse();
  const l=p.map(x=>{const s=S.staff.find(y=>y.id===x.sid);let ex='';
   if(x.ty==='lv')ex=`<small>${h(s.name)}'s balance: annual ${annBal(s)} · holiday days ${compBal(s)}</small><details><summary>Adjust another employee's hours (optional)</summary><div class="g2"><select id="js${x.id}"><option value="">—</option>${opts(S.staff.filter(y=>y.id!==x.sid))}</select><span class="tm"><input id="jf${x.id}" type="time"><input id="jt${x.id}" type="time"></span></div><small>Applied to the same dates as the vacation.</small></details>`;
@@ -340,9 +341,9 @@ function vRep(){const [y,m]=rm.split('-').map(Number),PD=dates(ds(new Date(y,m-2
    if(x.ty==='sw'&&(x.sid===s.id||x.w===s.id)&&mo(x.d)){sw++;L.push(`Shift swap: ${fd(x.d)} with ${nm(x.sid===s.id?x.w:x.sid)}`)}});
   Object.keys(S.att).filter(mo).sort().forEach(k2=>{const x=S.att[k2][s.id];if(x&&x.fl&&!x.rv)L.push(`⚠ ${fd(k2)}: ${flTx(x.fl)} (${h(x.dl||'')})`)});
   S.ded.filter(x=>x.sid===s.id&&mo(x.d)).forEach(x=>{if(x.st==='ok')dd++;L.push(`Deduction: ${fd(x.d)} — ${amtTx(x)} — ${h(x.why)} (${x.st==='ok'?'Confirmed':'Waived'})`)});
-  body.push(`<tr><td class="cn"><b>${h(s.name)}</b></td><td>${ok}</td><td class="late">${lt.length}</td><td class="late">${exl.length}</td><td class="abs">${ab.length}</td><td>${c.ann}</td><td>${c.comp}</td><td>${c.unp}</td><td>${hr}</td><td>${sw}</td><td>${dd}</td></tr>`);
-  det.push(`<details><summary>${h(s.name)}</summary>${lt.length?`<p class="late">Late: ${lt.join(', ')}</p>`:''}${exl.length?`<p class="late">Exceed grace: ${exl.join(', ')}</p>`:''}${ab.length?`<p class="abs">Absent: ${ab.join(', ')}</p>`:''}${L.map(t=>`<p>${t}</p>`).join('')||(lt.length||ab.length||exl.length?'':'<p class="sub">Nothing to report.</p>')}</details>`)});
- return`<div class="box"><label>Work month (26th to 25th, named by the month it ends)</label><input type="month" value="${rm}" onchange="rm=this.value||rm;render()"><small>${fd(PD[0])} → ${fd(PD[PD.length-1])}</small><div class="act"><button type="button" class="btn" onclick="exportXlsx()">Export to Excel</button></div><div class="msg" id="exm"></div></div><div class="box tw" style="padding:0"><table class="grid"><tr><th class="cn">Employee</th><th>Present</th><th>Late</th><th>Exceed</th><th>Absent</th><th>Annual</th><th>Comp</th><th>Unpaid</th><th>Perm</th><th>Swaps</th><th>Deduct.</th></tr>${body.join('')}</table></div><div class="box"><b>Details by day</b>${det.join('')}</div>`}
+  body.push(`<tr><td class="cn"><b>${h(s.name)}</b></td><td>${ok}</td><td class="late">${lt.length}</td><td class="late">${exl.length}</td><td class="late">${forgotDays(s.id,PD[0],PD[PD.length-1]).length}</td><td class="abs">${ab.length}</td><td>${c.ann}</td><td>${c.comp}</td><td>${c.unp}</td><td>${hr}</td><td>${sw}</td><td>${dd}</td></tr>`);
+  det.push(`<details><summary>${h(s.name)}</summary>${lt.length?`<p class="late">Late: ${lt.join(', ')}</p>`:''}${exl.length?`<p class="late">Exceed grace: ${exl.join(', ')}</p>`:''}${forgotDays(s.id,PD[0],PD[PD.length-1]).length?`<p class="late">Forgot check-out: ${forgotDays(s.id,PD[0],PD[PD.length-1]).map(fd).join(', ')}</p>`:''}${ab.length?`<p class="abs">Absent: ${ab.join(', ')}</p>`:''}${L.map(t=>`<p>${t}</p>`).join('')||(lt.length||ab.length||exl.length?'':'<p class="sub">Nothing to report.</p>')}</details>`)});
+ return`<div class="box"><label>Work month (26th to 25th, named by the month it ends)</label><input type="month" value="${rm}" onchange="rm=this.value||rm;render()"><small>${fd(PD[0])} → ${fd(PD[PD.length-1])}</small><div class="act"><button type="button" class="btn" onclick="exportXlsx()">Export to Excel</button></div><div class="msg" id="exm"></div></div><div class="box tw" style="padding:0"><table class="grid"><tr><th class="cn">Employee</th><th>Present</th><th>Late</th><th>Exceed</th><th>Forgot out</th><th>Absent</th><th>Annual</th><th>Comp</th><th>Unpaid</th><th>Perm</th><th>Swaps</th><th>Deduct.</th></tr>${body.join('')}</table></div><div class="box"><b>Details by day</b>${det.join('')}</div>`}
 const amtTx=x=>({0.25:'¼ day',0.5:'½ day',1:'1 day'}[x.amt]||x.amt+' days');
 const dChip=x=>`<span class="chip ${x.st==='ok'?'abs':'ok'}">${x.st==='ok'?'Confirmed':'Waived'}</span>`;
 function dedBox(id){const l=S.ded.filter(x=>x.sid===id).reverse();return l.length?`<div class="box"><b>Deductions</b>${l.map(x=>`<div class="row"><div>${fd(x.d)} · ${amtTx(x)}<br><small>${h(x.why)}</small></div>${dChip(x)}</div>`).join('')}</div>`:''}
@@ -568,6 +569,7 @@ function punch(t,force){
  msg={t:'Checking your location...',c:'late'};render();
  navigator.geolocation.getCurrentPosition(p=>doPunch(t,{lat:p.coords.latitude,lng:p.coords.longitude}),()=>{msg={t:'Please allow location access, or scan the office QR code.',c:'abs'};render()},{enableHighAccuracy:true,timeout:15000,maximumAge:0})}
 function onScan(code){if(!U||U.role!=='e')return;scanCode=code;scan='ok';qrDay=today();
+ if(openPrev(U.id)){if(earlyWarn({code}))return;return doPunch('out',{code})}
  const r=(S.att[today()]||{})[U.id]||{},n=nowHM(),gap=r.in?(+n.slice(0,2)*60+ +n.slice(3,5))-(+r.in.slice(0,2)*60+ +r.in.slice(3,5)):0;
  if(!r.in)return doPunch('in',{code});
  if(gap<2){msg={t:'You already checked in at '+t12(r.in),c:'late'};return render()}
@@ -577,7 +579,7 @@ function hs(){const m=location.hash.match(/^#in-(\d{4})$/);if(m){scanCode=m[1];s
 function bindDev(){}
 let qrBaseV=''; try{qrBaseV=localStorage.getItem('rt_qrbase')||''}catch(e){}
 qrBase=qrBaseV||location.href.split('#')[0].split('?')[0];
-function qrBox(){rpc('get_daily_code').then(c=>{qrCode=c||'';const e=$('#qrc');if(e)e.textContent=qrCode;drawQr()}).catch(e=>{const x=$('#qr');if(x)x.innerHTML='<small style="color:#000">'+h(errTx(e))+'</small>'});
+function qrBox(){startQrRefresh();rpc('get_daily_code').then(c=>{qrCode=c||'';const e=$('#qrc');if(e)e.textContent=qrCode;drawQr()}).catch(e=>{const x=$('#qr');if(x)x.innerHTML='<small style="color:#000">'+h(errTx(e))+'</small>'});
  return`<div class="box" style="text-align:center"><b>Office QR code</b><br><div id="qr" style="display:inline-block;background:#fff;padding:12px;border-radius:12px;margin:12px 0 4px;min-width:60px;min-height:60px"></div><div class="sub">Today's code <span id="qrc">...</span> · changes every day</div></div><div class="box"><label>App link (inside the QR code)</label><input id="qb" value="${h(qrBase)}" onchange="qrBase=this.value.split('#')[0];try{localStorage.setItem('rt_qrbase',qrBase)}catch(e){}drawQr()"><small>Show this on a screen at the office, or print it each day. Employees scan it from the app (Scan office QR code) and check in without GPS. GPS check-in still works too.</small></div>`}
 function drawQr(){const e=$('#qr');if(!e||!qrCode)return;e.innerHTML='';if(typeof QRCode==='undefined'){e.innerHTML='<small style="color:#000">QR library did not load. Check your connection.</small>';return}new QRCode(e,{text:qrBase+'#in-'+qrCode,width:220,height:220,correctLevel:QRCode.CorrectLevel.M})}
 
@@ -700,20 +702,20 @@ function loadXlsx(){return new Promise((res,rej)=>{if(window.XLSX)return res();c
 function exportRows(){
  const [y,m]=rm.split('-').map(Number),PD=dates(ds(new Date(y,m-2,26)),ds(new Date(y,m-1,25))),a=PD[0],b=PD[PD.length-1],t0=today(),inP=d=>d>=a&&d<=b;
  const staff=S.staff.filter(s=>s.on!==false||(s.left&&s.left>=a));
- const sum=[['Employee','Present days','Late','Absent days','Annual vacation days','Comp days','Unpaid days','Permission hours','Shift swaps','Deductions (count)','Deductions (days)','Exceed grace days','Hours worked']];
+ const sum=[['Employee','Present days','Late','Absent days','Annual vacation days','Comp days','Unpaid days','Permission hours','Shift swaps','Deductions (count)','Deductions (days)','Exceed grace days','Hours worked','Forgot check-out days']];
  const daily=[['Date','Day','Employee','Shift','Status','Check in','Check out','Hours worked','Required hours','Shortfall (min)','Exceed grace','Method','Distance (m)','Phone','Phone note']];
  staff.forEach(s=>{let ok=0,lt=0,ab=0,hr=0,sw=0,dn=0,dd=0,ex=0,tw=0;const c={ann:0,comp:0,unp:0};
   PD.forEach(d=>{if(d>t0)return;const st=status(s.id,d),r=st.a||{};
    if(st.k==='ok'||st.k==='late')ok++;if(st.k==='late')lt++;if(st.k==='abs')ab++;
    const w=workInfo(s.id,d);if(w&&w.worked!=null){tw+=Math.max(0,w.worked);if(w.exceed)ex++}
-   daily.push([d,DN[P(d).getDay()],s.name,st.sh?(t12(st.sh.s)+' - '+(st.sh.e?t12(st.sh.e):'')):'',st.t,r.in?t12(r.in):'',r.out?t12(r.out):'',w&&w.worked!=null?Math.round(Math.max(0,w.worked)/60*100)/100:'',w?Math.round(w.req/60*100)/100:'',w&&w.exceed?w.short:'',w&&w.worked!=null?(w.exceed?'Yes':'No'):'',r.via||(r.in?'Manual':''),r.dist==null?'':r.dist,r.dl||'',r.fl&&!r.rv?flTx(r.fl):''])});
+   daily.push([d,DN[P(d).getDay()],s.name,st.sh?(t12(st.sh.s)+' - '+(st.sh.e?t12(st.sh.e):'')):'',st.t,r.in?t12(r.in):'',r.out?t12(r.out)+(r.in&&toMin(r.out)<toMin(r.in)?' (next day)':''):(r.in&&isForgot(d,r)?'Forgot':''),w&&w.worked!=null?Math.round(Math.max(0,w.worked)/60*100)/100:'',w?Math.round(w.req/60*100)/100:'',w&&w.exceed?w.short:'',w&&w.worked!=null?(w.exceed?'Yes':'No'):'',r.via||(r.in?'Manual':''),r.dist==null?'':r.dist,r.dl||'',r.fl&&!r.rv?flTx(r.fl):''])});
   S.r.filter(x=>x.st==='ok'&&x.sid===s.id).forEach(x=>{
    if(x.ty==='lv'){const n=dates(x.f,x.t).filter(d=>inP(d)&&eff(s.id,d)).length;if(c[x.k]!==undefined)c[x.k]+=n}
    if(x.ty==='pm'&&inP(x.d))hr+=+x.hrs||0;
    if(x.ty==='sw'&&inP(x.d))sw++});
   S.r.filter(x=>x.st==='ok'&&x.ty==='sw'&&x.w===s.id&&inP(x.d)).forEach(()=>sw++);
   S.ded.filter(x=>x.sid===s.id&&inP(x.d)&&x.st==='ok').forEach(x=>{dn++;dd+=x.amt});
-  sum.push([s.name,ok,lt,ab,c.ann,c.comp,c.unp,hr,sw,dn,dd,ex,Math.round(tw/60*100)/100])});
+  sum.push([s.name,ok,lt,ab,c.ann,c.comp,c.unp,hr,sw,dn,dd,ex,Math.round(tw/60*100)/100,forgotDays(s.id,a,b).length])});
  const req=[['Employee','Type','Vacation type','From','To','Working days','Permission hours','Swap with','Reason','Status','Requested on']];
  S.r.filter(x=>!/^t[vs]/.test(String(x.id))&&(x.ty==='lv'?(x.f<=b&&x.t>=a):inP(x.d))).sort((p,q)=>String(p.cr||'').localeCompare(String(q.cr||''))).forEach(x=>{
   const lv=x.ty==='lv';req.push([nm(x.sid),{lv:'Vacation',pm:'Permission',sw:'Shift swap'}[x.ty],lv?KN[x.k]:'',lv?x.f:x.d,lv?x.t:x.d,lv?dates(x.f,x.t).filter(d=>eff(x.sid,d)).length:'',x.ty==='pm'?(+x.hrs||0):'',x.ty==='sw'?nm(x.w):'',x.why||'',STN[x.st][0],x.cr?String(x.cr).slice(0,10):''])});
@@ -727,24 +729,22 @@ async function exportXlsx(){const m=(t,c)=>{const e=$('#exm');if(e){e.textConten
 
 /* ---- working-hours rule: required time = shift length - grace - approved permission hours ---- */
 const toMin=t=>+t.slice(0,2)*60+ +t.slice(3,5);
-const minToHM=m=>pad2(Math.floor(m/60))+':'+pad2(m%60);
+const minToHM=m=>{m=((m%1440)+1440)%1440;return pad2(Math.floor(m/60))+':'+pad2(m%60)};
 const nowMin=()=>toMin(nowHM());
 const dur=m=>Math.floor(m/60)+'h '+pad2(m%60)+'m';
 let pendOut=null;
-function workInfo(sid,d){const sh=eff(sid,d);if(!sh||!sh.s||!sh.e||toMin(sh.e)<=toMin(sh.s))return null;
+function workInfo(sid,d){const sh=eff(sid,d);if(!sh||!sh.s||!sh.e)return null;
+ const s0=toMin(sh.s);let e0=toMin(sh.e);const cross=e0<=s0;if(cross)e0+=1440;
  const r=(S.att[d]||{})[sid],perm=S.r.filter(x=>x.ty==='pm'&&x.st==='ok'&&x.sid===sid&&x.d===d).reduce((a,x)=>a+(+x.hrs||0),0);
- const len=toMin(sh.e)-toMin(sh.s),req=Math.max(0,len-(+S.set.grace||0)-Math.round(perm*60)),o={req,len,perm,sh};
- if(r&&r.in){o.start=Math.max(toMin(r.in),toMin(sh.s));o.safe=o.start+req;
-  if(r.out){o.worked=toMin(r.out)-o.start;o.short=Math.max(0,req-o.worked);o.exceed=o.worked<req}}
+ const len=e0-s0,req=Math.max(0,len-(+S.set.grace||0)-Math.round(perm*60)),o={req,len,perm,sh,cross};
+ if(r&&r.in){o.start=Math.max(toMin(r.in),s0);o.safe=o.start+req;
+  if(r.out){let om=toMin(r.out);if(om<o.start)om+=1440;o.worked=om-o.start;o.short=Math.max(0,req-o.worked);o.exceed=o.worked<req}}
  return o}
-function exLine(sid,d){const w=workInfo(sid,d);if(!w)return'';
- if(w.exceed)return`<br><small class="late">Worked ${dur(Math.max(0,w.worked))} of ${dur(w.req)} · Exceed grace (${w.short} min)</small>`;
- const r=(S.att[d]||{})[sid];if(r&&r.in&&!r.out&&d<today())return'<br><small class="late">Missing check-out</small>';return''}
-function wkLine(){const w=workInfo(U.id,today());if(!w||w.start==null)return'';const r=(S.att[today()]||{})[U.id]||{};
+function wkLine(){const op=openPrev(U.id),d=op?op.d:today(),w=workInfo(U.id,d);if(!w||w.start==null)return'';const r=(S.att[d]||{})[U.id]||{};
  if(r.out)return w.exceed?`<br><small class="late">Worked ${dur(Math.max(0,w.worked))} of ${dur(w.req)} required · Exceed grace by ${w.short} min</small>`:`<br><small class="ok">Worked ${dur(w.worked)} of ${dur(w.req)} required ✓</small>`;
  return`<br><small>Earliest check-out without Exceed grace: <b>${t12(minToHM(w.safe))}</b></small>`}
-function earlyWarn(o){if(!U||U.role!=='e')return false;const w=workInfo(U.id,today());if(!w||w.start==null)return false;
- const r=(S.att[today()]||{})[U.id]||{};if(r.out)return false;const n=nowMin();if(n>=w.safe)return false;
+function earlyWarn(o){if(!U||U.role!=='e')return false;const op=openPrev(U.id),d=op?op.d:today(),w=workInfo(U.id,d);if(!w||w.start==null)return false;
+ const r=(S.att[d]||{})[U.id]||{};if(r.out)return false;const n=nowMin()+(op?1440:0);if(n>=w.safe)return false;
  const worked=Math.max(0,n-w.start),short=w.req-worked;pendOut=o||null;
  msg={t:`⚠ You are leaving early.<br>Worked so far: <b>${dur(worked)}</b> · Required: <b>${dur(w.req)}</b>.<br>You can check out without Exceed grace from <b>${t12(minToHM(w.safe))}</b>. Checking out now records an Exceed grace of <b>${short} min</b>.<div class="act"><button type="button" class="btn r" onclick="punchForce()">Check out anyway</button><button type="button" class="btn g" onclick="msg={};render()">Cancel</button></div>`,c:'late'};
  render();return true}
@@ -752,14 +752,6 @@ function punchForce(){const o=pendOut;pendOut=null;msg={};if(o&&o.code)return do
 
 /* ---- employee: simple summary of my month ---- */
 let myOff=0;
-function myMonthBox(){const n=new Date(),base=new Date(n.getFullYear(),n.getMonth()+(n.getDate()>=26?1:0)+myOff,1),y=base.getFullYear(),m=base.getMonth()+1;
- const PD=dates(ds(new Date(y,m-2,26)),ds(new Date(y,m-1,25))),a=PD[0],b=PD[PD.length-1],t0=today(),sid=U.id;
- let late=0,ex=0,vac=0,pm=0,ph=0;
- PD.forEach(d=>{if(d>t0)return;const st=status(sid,d);if(st.k==='late')late++;const w=workInfo(sid,d);if(w&&w.exceed)ex++});
- S.r.filter(x=>x.st==='ok'&&x.sid===sid).forEach(x=>{
-  if(x.ty==='lv')vac+=dates(x.f,x.t).filter(d=>d>=a&&d<=b&&eff(sid,d)).length;
-  if(x.ty==='pm'&&x.d>=a&&x.d<=b){pm++;ph+=+x.hrs||0}});
- return`<div class="box"><div class="ov-h"><b>${myOff===0?'My month':'Month summary'}</b><span class="tm" style="flex:none"><button type="button" class="btn g" style="min-height:32px;padding:2px 12px" onclick="myOff--;render()">‹</button><button type="button" class="btn g" style="min-height:32px;padding:2px 12px" ${myOff>=0?'disabled':''} onclick="myOff++;render()">›</button></span></div><small>${fd(a)} → ${fd(b)}</small><div class="stats" style="margin-top:12px"><div class="st late"><b>${late}</b><span>Late days</span></div><div class="st leave"><b>${vac}</b><span>Vacation days</span></div><div class="st rest"><b>${pm}</b><span>Permissions</span></div><div class="st late"><b>${ex}</b><span>Exceed grace</span></div></div>${ph?`<small style="display:block;margin-top:10px">Permission hours this month: ${ph}</small>`:''}</div>`}
 
 /* ---- in-app QR scanner (native BarcodeDetector first, jsQR as backup, typed code as last resort) ---- */
 let bdet=null,jsqrLoading=false;
@@ -795,6 +787,48 @@ function scanLoop(){const v=$('#scv'),c=document.createElement('canvas');let bus
 function manualBox(){return`<div class="box"><b>Manual attendance edit</b><label>Employee</label><select id="ms">${opts(S.staff)}</select><div class="g2"><div><label>Date</label><input id="md" type="date" value="${today()}"></div><div><label>In / Out</label><span class="tm"><input id="mi" type="time"><input id="mo" type="time"></span></div></div><div class="act"><button type="button" class="btn" onclick="man(0)">Save</button><button type="button" class="btn g" onclick="man(1)">Clear day</button></div></div>`}
 function vSet(){return bioBox()+pinBox()+`<div class="box"><b>Backup &amp; restore</b><p class="sub" style="margin:4px 0 0">Save a copy of all the data, or load a saved copy back. Keep backups private: they contain names and records.</p><div class="act"><button type="button" class="btn" onclick="doBackup()">Backup</button><button type="button" class="btn g" onclick="doRestore()">Restore</button></div><textarea id="bk" placeholder="Backup text appears here. To restore, paste a backup here and press Restore."></textarea><label>Or choose a backup file</label><input type="file" accept=".json,application/json" onchange="readFile(this)"><div class="msg" id="bkm"></div><small>PINs are not part of the backup. They stay in Supabase.</small></div>
  <div class="box"><b>Reset</b><p class="sub" style="margin:4px 0 0">Make a backup first. Resets cannot be undone.</p><div class="act"><button type="button" class="btn r" onclick="resetRecords()">Reset records</button><button type="button" class="btn r" onclick="resetAll()">Reset everything</button></div><small>Reset records clears attendance, requests, deductions, holidays and date changes, and keeps the team, schedules and settings. Reset everything also clears linked phones, the office location and settings, and puts schedules back to the default. Employee accounts always stay.</small></div>`}
+
+/* ---- shifts that end after midnight (for example 4 PM to 12 AM) ---- */
+function nightBox(){const t=biz(),y=dayMinus(t,1);
+ const L=ACT().map(s=>{const sh=eff(s.id,y);if(!(sh&&sh.s&&sh.e&&toMin(sh.e)<=toMin(sh.s)))return'';
+  const st=status(s.id,y);if(st.k==='off'||st.k==='wait')return'';const r=(S.att[y]||{})[s.id];let c=chip(st);
+  if(r&&r.in&&!r.out)c=isForgot(y,r)?'<span class="chip late">Forgot check-out</span>':'<span class="chip wait">Still open</span>';
+  const o=r&&r.in?`In ${t12(r.in)} · Out ${r.out?t12(r.out)+(toMin(r.out)<toMin(r.in)?' (after midnight)':''):'—'}`:'No check-in';
+  let ex='';if(r&&r.out){const w=workInfo(s.id,y);if(w&&w.exceed)ex=exLine(s.id,y);else if(w&&w.worked!=null)ex=`<br><small class="ok">Worked ${dur(w.worked)} of ${dur(w.req)} required ✓</small>`}
+  return`<div class="row"><div><b>${h(s.name)}</b><br><small>Shift ${tx(st.sh)} · started yesterday</small><br><small>${o}</small>${ex}</div>${c}</div>`}).join('');
+ return L?`<div class="box"><b>Last night's shifts</b><p class="sub" style="margin:4px 0 6px">Shifts that end after midnight. They are counted on the day they started.</p>${L}</div>`:''}
+
+/* ---- the working day ends at 1:00 AM; an open shift after that is "forgot check-out" ---- */
+const DAY_START=1;
+const biz=()=>ds(new Date(Date.now()-DAY_START*3600e3));
+const dayMinus=(d,n)=>ds(new Date(P(d).getTime()-n*864e5));
+function isForgot(d,r){return !!(r&&r.in&&!r.out&&Date.now()>=P(d).getTime()+(24+DAY_START)*3600e3)}
+function forgotDays(sid,a,b){const o=[];Object.keys(S.att).sort().forEach(d=>{if(d>=a&&d<=b&&isForgot(d,(S.att[d]||{})[sid]))o.push(d)});return o}
+function forgotYesterday(){const y=dayMinus(biz(),1);return ACT().filter(s=>isForgot(y,(S.att[y]||{})[s.id])).map(s=>({s,d:y,r:S.att[y][s.id]}))}
+function fixForget(sid,d){const ms=$('#ms'),md=$('#md'),mi=$('#mi'),mo=$('#mo'),r=(S.att[d]||{})[sid]||{};
+ if(!ms||!md)return;ms.value=sid;md.value=d;if(mi)mi.value=r.in||'';if(mo)mo.value='';
+ const b=$('#md');b.scrollIntoView({block:'center'});if(mo)mo.focus()}
+function forgetBox(){const L=forgotYesterday();if(!L.length)return'';
+ return`<div class="box"><b>Forget yesterday</b><p class="sub" style="margin:4px 0 6px">These employees did not check out after their shift (the working day ends at 1:00 AM). Fix the time below, or tap Fix.</p>${L.map(x=>`<div class="row"><div><b>${h(x.s.name)}</b><br><small>${fd(x.d)} · In ${t12(x.r.in)} · no check-out</small></div><button type="button" class="btn g" style="min-height:36px;padding:4px 12px" onclick="fixForget('${x.s.id}','${x.d}')">Fix</button></div>`).join('')}</div>`}
+function openPrev(sid){const t=today();if(((S.att[t]||{})[sid]||{}).in)return null;
+ if(nowMin()>=DAY_START*60)return null;
+ const y=dayMinus(t,1),r=(S.att[y]||{})[sid];if(!r||!r.in||r.out)return null;return{d:y,r}}
+function exLine(sid,d){const w=workInfo(sid,d);const r=(S.att[d]||{})[sid];
+ if(r&&r.in&&!r.out&&d<today())return isForgot(d,r)?'<br><small class="late">Forgot check-out</small>':'<br><small class="wait">Still open (until 1:00 AM)</small>';
+ if(!w)return'';
+ if(w.exceed)return`<br><small class="late">Worked ${dur(Math.max(0,w.worked))} of ${dur(w.req)} · Exceed grace (${w.short} min)</small>`;return''}
+let qrT=null;
+function startQrRefresh(){if(qrT)clearInterval(qrT);qrT=setInterval(()=>{if(tab!=='qr'||!U){clearInterval(qrT);qrT=null;return}
+ rpc('get_daily_code').then(c=>{if(c&&c!==qrCode){qrCode=c;const e=$('#qrc');if(e)e.textContent=qrCode;drawQr()}}).catch(()=>{})},60000)}
+function myMonthBox(){const n=new Date(),base=new Date(n.getFullYear(),n.getMonth()+(n.getDate()>=26?1:0)+myOff,1),y=base.getFullYear(),m=base.getMonth()+1;
+ const PD=dates(ds(new Date(y,m-2,26)),ds(new Date(y,m-1,25))),a=PD[0],b=PD[PD.length-1],t0=today(),sid=U.id;
+ let late=0,ex=0,vac=0,pm=0,ph=0;
+ PD.forEach(d=>{if(d>t0)return;const st=status(sid,d);if(st.k==='late')late++;const w=workInfo(sid,d);if(w&&w.exceed)ex++});
+ S.r.filter(x=>x.st==='ok'&&x.sid===sid).forEach(x=>{
+  if(x.ty==='lv')vac+=dates(x.f,x.t).filter(d=>d>=a&&d<=b&&eff(sid,d)).length;
+  if(x.ty==='pm'&&x.d>=a&&x.d<=b){pm++;ph+=+x.hrs||0}});
+ const fg=forgotDays(sid,a,b);
+ return`<div class="box"><div class="ov-h"><b>${myOff===0?'My month':'Month summary'}</b><span class="tm" style="flex:none"><button type="button" class="btn g" style="min-height:32px;padding:2px 12px" onclick="myOff--;render()">‹</button><button type="button" class="btn g" style="min-height:32px;padding:2px 12px" ${myOff>=0?'disabled':''} onclick="myOff++;render()">›</button></span></div><small>${fd(a)} → ${fd(b)}</small><div class="stats g3" style="margin-top:12px"><div class="st late"><b>${late}</b><span>Late days</span></div><div class="st leave"><b>${vac}</b><span>Vacation days</span></div><div class="st rest"><b>${pm}</b><span>Permissions</span></div><div class="st late"><b>${ex}</b><span>Exceed grace</span></div><div class="st abs"><b>${fg.length}</b><span>Forgot check-out</span></div></div>${ph?`<small style="display:block;margin-top:10px">Permission hours this month: ${ph}</small>`:''}${fg.length?`<small class="late" style="display:block;margin-top:10px">You forgot to check out on: ${fg.map(fd).join(', ')}. Ask your manager to fix it.</small>`:''}</div>`}
 
 function sizeSp(){const e=$('#stk'),hr=e.querySelector('.hero'),c=e.classList.contains('c');hr.style.transition='none';e.classList.remove('c');const H=e.offsetHeight;if(c)e.classList.add('c');void hr.offsetHeight;hr.style.transition='';$('#stkSp').style.height=H+'px'}
 const _render=render;render=function(){bindDev();_render();sizeSp();try{const on=document.querySelector('#nav .on');if(on)on.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}};

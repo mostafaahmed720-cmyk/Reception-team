@@ -1,6 +1,6 @@
 // Reception Team service worker: the app shell works offline; data always comes live from Supabase.
 // Bump VERSION whenever you upload a new index.html.
-const VERSION='rt-v16';
+const VERSION='rt-v18';
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','apple-touch-icon.png'];
 const LIBS=['https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js','https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js','https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js'];
 self.addEventListener('install',e=>{e.waitUntil((async()=>{
